@@ -1,4 +1,27 @@
+from concurrent import futures
 from g4f.client import Client
+from pypkg import ai_pb2_grpc
+from pypkg import ai_pb2
+import grpc
+# python -m grpc_tools.protoc -I./protos --python_out=./pypkg --pyi_out=./pypkg --grpc_python_out=./pypkg ./protos/ai.proto
+
+class AI(ai_pb2_grpc.AiServicer):
+    def GetSuggest(self, request, context):
+        return ai_pb2.SuggestResponse(
+            ok=True,
+            request="Requested!"
+        )
+    def ClearHistory(self, request, context):
+        return ai_pb2.ClearHistoryResponse(
+            ok=True
+        )
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    ai_pb2_grpc.add_AiServicer_to_server(AI(), server)
+    server.add_insecure_port("[::]:50051")
+    server.start()
+    server.wait_for_termination()
+
 
 class AlgoBotConversation:
     def __init__(self):
@@ -60,6 +83,7 @@ class AlgoBotConversation:
 
         return ai_response
 
+
 def main():
     # Создаём экземпляр бота
     algobot = AlgoBotConversation()
@@ -79,4 +103,5 @@ def main():
         print(f"АлгоБот: {response}")
 
 if __name__ == "__main__":
-    main()
+    # main()
+    serve()
