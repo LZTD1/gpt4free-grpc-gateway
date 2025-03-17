@@ -20,6 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r ./.requirements
           pip install pyinstaller
+          pip install grpcio
 
       - name: Сборка бинарника 🏗️
         run: |

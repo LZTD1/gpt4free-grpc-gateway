@@ -13,4 +13,4 @@ gen:
 	  protoc --proto-path=./protos ./protos/*.proto
 .PHONY: build
 build:
-	pyinstaller --onefile ai.py
+	pyinstaller --onefile --hidden-import=grpc ai.py
