@@ -11,3 +11,6 @@ gen:
 	  --in-place \
 	  --python-out ./pypkg \
 	  protoc --proto-path=./protos ./protos/*.proto
+.PHONY: build
+build:
+	pyinstaller --onefile ai.py

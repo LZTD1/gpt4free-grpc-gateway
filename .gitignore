@@ -3,7 +3,7 @@
 /.idea/*
 /__pycache__/*
 /internal/__pycache__/*
-main.spec
+/*.spec
 /.dist/*
 dist/*
 build/*
