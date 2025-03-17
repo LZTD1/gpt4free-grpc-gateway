@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package pypkg;
+
 service Ai {
     rpc GetSuggest (SuggestRequest) returns (SuggestResponse);
     rpc ClearHistory (ClearHistoryRequest) returns (ClearHistoryResponse);

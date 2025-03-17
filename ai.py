@@ -1,8 +1,11 @@
 from concurrent import futures
-from g4f.client import Client
-from pypkg import ai_pb2_grpc
-from pypkg import ai_pb2
+
 import grpc
+from g4f.client import Client
+
+from pypkg import ai_pb2_grpc, ai_pb2
+
+
 # python -m grpc_tools.protoc -I./protos --python_out=./pypkg --pyi_out=./pypkg --grpc_python_out=./pypkg ./protos/ai.proto
 
 class AI(ai_pb2_grpc.AiServicer):
@@ -11,10 +14,13 @@ class AI(ai_pb2_grpc.AiServicer):
             ok=True,
             request="Requested!"
         )
+
     def ClearHistory(self, request, context):
         return ai_pb2.ClearHistoryResponse(
             ok=True
         )
+
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     ai_pb2_grpc.add_AiServicer_to_server(AI(), server)
@@ -27,7 +33,7 @@ class AlgoBotConversation:
     def __init__(self):
         # Инициализация клиента G4F
         self.client = Client()
-        
+
         # Системный промт, задающий роль и поведение бота
         self.system_prompt = {
             "role": "system",
@@ -55,7 +61,7 @@ class AlgoBotConversation:
 - Цель — поддерживать интерес к программированию и помогать на практике.
             """
         }
-        
+
         # Инициализация истории чата с системным промтом
         self.chat_history = [self.system_prompt]
 
@@ -89,7 +95,8 @@ def main():
     algobot = AlgoBotConversation()
 
     # Приветственное сообщение
-    print("АлгоБот: Привет! 👋 Я АлгоБот, создан Рязанским филиалом 'Алгоритмики'. Готов помогать учителям с программированием. Пиши 'exit', чтобы завершить. Чем могу помочь? 💻")
+    print(
+        "АлгоБот: Привет! 👋 Я АлгоБот, создан Рязанским филиалом 'Алгоритмики'. Готов помогать учителям с программированием. Пиши 'exit', чтобы завершить. Чем могу помочь? 💻")
 
     # Основной цикл общения
     while True:
@@ -101,6 +108,7 @@ def main():
 
         response = algobot.get_response(user_input)
         print(f"АлгоБот: {response}")
+
 
 if __name__ == "__main__":
     # main()
