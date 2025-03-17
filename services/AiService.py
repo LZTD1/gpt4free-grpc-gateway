@@ -1,8 +1,7 @@
 from logging import Logger
-
-import g4f
-from g4f import Client
 from typing import Dict, List
+
+from g4f import Client
 
 SYS_PROMT = """
 Ты — АлгоБот, чат-бот, созданный Рязанским филиалом детской IT-школы программирования "Алгоритмика". 
