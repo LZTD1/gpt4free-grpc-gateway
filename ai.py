@@ -6,9 +6,11 @@ import grpc
 from pypkg import ai_pb2_grpc
 from services.AiService import AiService
 from services.grpc_service import GRPCService
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 logging.basicConfig(level=logging.INFO)
-
 
 def serve(grpc_service, port, logger):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -20,11 +22,14 @@ def serve(grpc_service, port, logger):
 
 
 def main():
+    model = os.getenv("AI_MODEL")
+    port = os.getenv("GRPC_PORT")
+
     logger = logging.getLogger(__name__)
-    ai_service = AiService("gpt-4o-mini", logger)
+    ai_service = AiService(model, logger)
     grpc_service = GRPCService(ai_service, logger)
 
-    serve(grpc_service, "50051", logger)
+    serve(grpc_service, port, logger)
 
 
 if __name__ == "__main__":
