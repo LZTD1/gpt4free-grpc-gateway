@@ -4,6 +4,8 @@ from typing import Dict, List
 
 from g4f import AsyncClient
 
+MAX_MSG_HISTORY_LEN = 500
+
 SYS_PROMT = """
 Ты — АлгоБот, чат-бот, созданный Рязанским филиалом детской IT-школы программирования "Алгоритмика". 
 Ты работаешь в Telegram и помогаешь учителям с вопросами по программированию и обучению. 
@@ -55,12 +57,21 @@ class AiService:
             "content": content,
         })
 
-    async def suggest(self, uid, message):
+    def check_history(self, uid) -> bool:
+        if len(self.users[uid]) >= MAX_MSG_HISTORY_LEN:
+            self.clear_history(uid)
+            return True
+        return False
+
+    async def suggest(self, uid, message) -> (str, bool):
         self.create_user(uid)
+        if self.check_history(uid):
+            self.log.info(f"User {uid} get limit history messages - {MAX_MSG_HISTORY_LEN}")
+            return f"Упс, наша история сообщений превысила максимум - {MAX_MSG_HISTORY_LEN} сообщений\nМне пришлось отчистить себе память, задавай вопрос снова!", True
 
         retries = 0
         self.add_message(uid, "user", message)
-        self.log.info("User request suggestion {}:{}", uid, message)
+        self.log.info("User request suggestion {}:{}...", uid, message[:20])
         while retries < self.retry_policy['retry_count']:
             try:
                 response, ok = await asyncio.wait_for(
