@@ -1,7 +1,9 @@
+import asyncio
+import time
 from logging import Logger
 from typing import Dict, List
 
-from g4f import Client
+from g4f import AsyncClient
 
 SYS_PROMT = """
 Ты — АлгоБот, чат-бот, созданный Рязанским филиалом детской IT-школы программирования "Алгоритмика". 
@@ -29,10 +31,11 @@ SYS_PROMT = """
 
 
 class AiService:
-    def __init__(self, model, log: Logger):
+    def __init__(self, config, log: Logger):
         self.users: Dict[int, List[Dict[str, str]]] = {}
-        self.client = Client()
-        self.model = model
+        self.client = AsyncClient()
+        self.model = config['model']
+        self.retry_policy = config['retry_policy']
         self.log = log
         self.sys_promt = {
             "role": "system",
@@ -41,6 +44,7 @@ class AiService:
 
     def create_user(self, uid: int):
         if uid not in self.users:
+            self.log.debug("Created new user with ID: {}", uid)
             self.users[uid] = [self.sys_promt]
 
     def clear_history(self, uid: int):
@@ -52,25 +56,49 @@ class AiService:
             "content": content,
         })
 
-    def suggest(self, uid, message):
+    async def suggest(self, uid, message):
         self.create_user(uid)
-        self.add_message(uid, "user", message)
-        status = True
 
+        retries = 0
+        self.add_message(uid, "user", message)
+        self.log.info("User request suggestion {}:{}", uid, message)
+        while retries < self.retry_policy['retry_count']:
+            try:
+                response, ok = await asyncio.wait_for(
+                    self._suggest(uid),
+                    timeout=self.retry_policy['timeout']
+                )
+                if ok:
+                    self.log.debug(f"User successfully get response: {response.choices[0].message.content[:20]}...")
+                    self.add_message(uid, "assistant", response.choices[0].message.content)
+                    return response.choices[0].message.content, True
+            except asyncio.TimeoutError:
+                self.log.debug(
+                    f"The _suggest function timed out (attempt {retries + 1}/{self.retry_policy['retry_count']})")
+            except Exception as err:
+                self.log.debug(
+                    f"The suggest returns unexpected error (attempt {retries + 1}/{self.retry_policy['retry_count']})",
+                    err)
+
+            if retries < self.retry_policy['retry_count']:
+                retries += 1
+                await asyncio.sleep(self.retry_policy['retry_timeout'])
+            else:
+                break
+
+        self.log.warning(
+            f"After {self.retry_policy['retry_count']} attempts, failed to receive a response from the server")
+        self.add_message(uid, "assistant", "error while suggesting.")
+        return "Произошла ошибка сервера!", False
+
+    async def _suggest(self, uid: int) -> tuple:
         try:
-            response = self.client.chat.completions.create(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=self.users[uid],
                 web_search=False,
-
             )
-            ai_response = response.choices[0].message.content
-            self.add_message(uid, "assistant", ai_response)
+            return response, True
         except Exception as e:
-            error_msg = "Извините, произошла внутренняя ошибка сервера. Ответ не может быть предоставлен в данный момент."
-            status = False
-            self.log.error("Error while suggesting!", e)
-            self.add_message(uid, "assistant", error_msg)
-            ai_response = f"{error_msg}\n\n{e.__str__()}"
-
-        return ai_response, status
+            self.log.error("Unexpected error in function _suggest {}", e)
+            return {"choices": [{"message": {"content": "Внутренняя ошибка сервера"}}]}, False

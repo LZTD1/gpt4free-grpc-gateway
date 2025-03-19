@@ -6,6 +6,8 @@
 /*.spec
 /.dist/*
 dist/*
+*.log
+/har_and_cookies
 build/*
 /.build/*
 /.ruff_cache/*

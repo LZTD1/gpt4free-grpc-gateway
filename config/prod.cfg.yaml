@@ -1,0 +1,13 @@
+server:
+  host: "localhost"
+  port: 50051
+
+ai:
+  model: "gpt-4o"
+  retry_policy:
+    timeout: 40
+    retry_count: 5
+    retry_timeout: 5
+
+logging:
+  level: "INFO"
