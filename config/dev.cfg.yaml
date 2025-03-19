@@ -11,3 +11,4 @@ ai:
 
 logging:
   level: "DEBUG"
+  in_file: false

@@ -12,9 +12,7 @@ from services.grpc_service import GRPCService
 
 # Initialize logger
 logger = loguru.logger
-logger.add("f_{time}.log", format="{time} | {level} | {name}:{function}:{line} - {message} | {extra}", level="DEBUG",
-           rotation="5 MB")
-
+logger.remove()
 
 def load_config():
     file_path = os.getenv("CONFIG_PATH")
@@ -35,7 +33,9 @@ def load_config():
 
 
 config = load_config()
-logger.level(config['logging']['level'])
+logger.add(sys.stdout, level=config['logging']['level'])
+if config['logging']['in_file']:
+    logger.add("f_{time}.log", format="{time} | {level} | {name}:{function}:{line} - {message} | {extra}",level="DEBUG",rotation="5 MB")
 
 
 async def serve(grpc_service):

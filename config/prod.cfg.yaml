@@ -11,3 +11,4 @@ ai:
 
 logging:
   level: "INFO"
+  in_file: true
