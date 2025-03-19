@@ -28,4 +28,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: binary
-          path: ./dist/ai.exe
+          path: |
+            ./dist/ai.exe
+            ./config/prod.cfg.yaml

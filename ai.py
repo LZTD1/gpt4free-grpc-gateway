@@ -19,7 +19,8 @@ logger.add("f_{time}.log", format="{time} | {level} | {name}:{function}:{line} -
 def load_config():
     file_path = os.getenv("CONFIG_PATH")
     if not file_path:
-        logger.critical("param file_path not found!", file_path)
+        logger.debug("param file_path is not found in dir, get default {}", file_path)
+        file_path = './prod.cfg.yaml'
     try:
         with open(file_path, 'r') as file:
             cfg = yaml.safe_load(file)
