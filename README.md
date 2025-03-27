@@ -29,6 +29,7 @@ This server provides the capabilities of the [gpt4free](https://github.com/xtekk
 ## Configuration
 
 All settings for configuring the gRPC service are located in the configuration file specified by the `CONFIG_PATH` environment variable. You can modify these settings to work with different models and generation features.
+Make sure to set the `sys_promt_path` in your YAML configuration. This path points to the file containing the chatbot's system prompt. If this setting is omitted or the file is missing, the prompt will not be loaded and will remain empty.
 
 ## Important!
 
