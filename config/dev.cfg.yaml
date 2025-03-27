@@ -1,11 +1,13 @@
 server:
   host: "localhost"
-  port: 50051
+  port: 50055
 
 ai:
-  model: "gpt-4o"
+  model: "deepseek-v3"
+  image_model: "flux-dev"
   retry_policy:
-    timeout: 1
+    timeout: 30
+    image_timeout: 999
     retry_count: 3
     retry_timeout: 1
 

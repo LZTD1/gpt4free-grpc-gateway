@@ -3,9 +3,11 @@ server:
   port: 50051
 
 ai:
-  model: "gpt-4o"
+  model: "deepseek-v3"
+  image_model: "flux-dev"
   retry_policy:
     timeout: 40
+    image_timeout: 180
     retry_count: 5
     retry_timeout: 5
 

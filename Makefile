@@ -1,6 +1,5 @@
 .PHONY: gen
 gen:
-	mkdir "pypkg"
 	python -m grpc_tools.protoc -I=./protos \
 			--python_out=./pypkg \
 			--pyi_out=./pypkg \
@@ -11,6 +10,11 @@ gen:
 	  --in-place \
 	  --python-out ./pypkg \
 	  protoc --proto-path=./protos ./protos/*.proto
+
 .PHONY: build
 build:
 	pyinstaller --onefile --hidden-import=grpc ai.py
+	
+.PHONY: dev
+dev:
+	set CONFIG_PATH=config/dev.cfg.yaml && python ai.py
