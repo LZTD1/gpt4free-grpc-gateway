@@ -14,6 +14,14 @@ from services.grpc_service import GRPCService
 logger = loguru.logger
 logger.remove()
 
+
+def load_text_file(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.read()
+    return ""
+
+
 def load_config():
     file_path = os.getenv("CONFIG_PATH")
     if not file_path:
@@ -22,7 +30,9 @@ def load_config():
     try:
         with open(file_path, 'r') as file:
             cfg = yaml.safe_load(file)
+            cfg['ai']["sys_promt"] = load_text_file(cfg['ai']["sys_promt_path"])
             print("Config successfully get from file")
+
         return cfg
     except FileNotFoundError:
         print('file not found!')

@@ -1,8 +1,9 @@
 server:
   host: "localhost"
-  port: 50055
+  port: 50052
 
 ai:
+  sys_promt_path: "./config/prod.promt.txt"
   model: "deepseek-v3"
   image_model: "flux-dev"
   retry_policy:

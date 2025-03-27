@@ -3,6 +3,7 @@ server:
   port: 50051
 
 ai:
+  sys_promt_path: "./config/prod.promt.txt"
   model: "deepseek-v3"
   image_model: "flux-dev"
   retry_policy:
