@@ -18,3 +18,15 @@ build:
 .PHONY: dev
 dev:
 	set CONFIG_PATH=config/dev.cfg.yaml && python ai.py
+
+.PHONY: nuitka
+nuitka:
+	python -m nuitka \
+	  --enable-plugin=multiprocessing \
+	  --follow-imports \
+	  --show-progress \
+	  --remove-output \
+	  --onefile \
+	  --jobs=4 \
+	  --output-dir=build \
+	  ai.py

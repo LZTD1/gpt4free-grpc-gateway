@@ -20,9 +20,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
 
-      - name: Сборка бинарника 🏗️
+      - name: Сборка бинарника pyinstaller 🏗️
         run: |
           pyinstaller --onefile --hidden-import=grpc ai.py
+
+      - name: Сборка бинарника nuitka 🏗️
+        run: |
+          python -m nuitka \
+            --enable-plugin=multiprocessing \
+            --follow-imports \
+            --show-progress \
+            --remove-output \
+            --onefile \
+            --jobs=4 \
+            --output-dir=build \
+            ai.py
 
       - name: Upload Windows binary 📤
         uses: actions/upload-artifact@v4
@@ -30,4 +42,5 @@ jobs:
           name: binary
           path: |
             ./dist/ai.exe
+            ./build/ai.exe
             ./config/prod.cfg.yaml
