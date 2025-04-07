@@ -1,4 +1,5 @@
-![build binary](https://github.com/LZTD1/gpt4free-grpc-gateway/actions/workflows/binary.yaml/badge.svg)
+![build binary](https://github.com/LZTD1/gpt4free-grpc-gateway/actions/workflows/nuitka.yaml/badge.svg)
+![build binary](https://github.com/LZTD1/gpt4free-grpc-gateway/actions/workflows/pyinstaller.yaml/badge.svg)
 # gRPC Server for GPT4Free Integration
 
 This server provides the capabilities of the [gpt4free](https://github.com/xtekky/gpt4free) library, including image and text generation through various models.
