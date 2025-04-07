@@ -26,15 +26,7 @@ jobs:
 
       - name: Сборка бинарника nuitka 🏗️
         run: |
-          python -m nuitka \
-            --enable-plugin=multiprocessing \
-            --follow-imports \
-            --show-progress \
-            --remove-output \
-            --onefile \
-            --jobs=4 \
-            --output-dir=build \
-            ai.py
+          python -m nuitka --enable-plugin=multiprocessing --follow-imports --show-progress --remove-output --onefile --jobs=4 --output-dir=build ai.py
 
       - name: Upload Windows binary 📤
         uses: actions/upload-artifact@v4
