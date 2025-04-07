@@ -1,4 +1,4 @@
-name: Сборка бинарника
+name: Windows binary
 
 on:
   workflow_dispatch:
@@ -15,16 +15,16 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Установка зависимостей ⬇️
+      - name: Installing deps ⬇️
         run: |
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
 
-      - name: Сборка бинарника pyinstaller 🏗️
+      - name: build with pyinstaller 🏗️
         run: |
           pyinstaller --onefile --hidden-import=grpc ai.py
 
-      - name: Сборка бинарника nuitka 🏗️
+      - name: build with nuitka 🏗️
         run: |
           python -m nuitka --enable-plugin=multiprocessing --follow-imports --show-progress --remove-output --onefile --jobs=4 --output-dir=build ai.py
 
