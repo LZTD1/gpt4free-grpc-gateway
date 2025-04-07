@@ -1,6 +1,8 @@
 import asyncio
 import os
+import signal
 import sys
+import threading
 
 import grpc
 import loguru
@@ -41,11 +43,12 @@ def load_config():
         print("configuration file cant parsed!", e)
         sys.exit(1)
 
+
 config = load_config()
 logger.add(sys.stdout, level=config['logging']['level'])
 if config['logging']['in_file']:
-    logger.add("f_{time}.log", format="{time} | {level} | {name}:{function}:{line} - {message} | {extra}",level="DEBUG",rotation="5 MB")
-
+    logger.add("f_{time}.log", format="{time} | {level} | {name}:{function}:{line} - {message} | {extra}",
+               level="DEBUG", rotation="5 MB")
 
 
 async def serve(grpc_service):
@@ -53,14 +56,23 @@ async def serve(grpc_service):
     ai_pb2_grpc.add_AiServicer_to_server(grpc_service, server)
     server.add_insecure_port(f"{config['server']['host']}:{config['server']['port']}")
     logger.info("Server successfully starter, and listen addr {}", config['server'])
+
     await server.start()
-    await server.wait_for_termination()
+    try:
+        await server.wait_for_termination()
+    except KeyboardInterrupt:
+        logger.info("grace shutdown")
+        await server.stop(config['server']['grace_time'])
+        raise
 
 
 async def main():
     ai_service = AiService(config['ai'], logger)
     grpc_service = GRPCService(ai_service)
-    await serve(grpc_service)
+    try:
+        await serve(grpc_service)
+    except asyncio.CancelledError:
+        logger.info("main task was cancelled.")
 
 
 if __name__ == "__main__":
