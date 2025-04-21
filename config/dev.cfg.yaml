@@ -5,7 +5,9 @@ server:
 
 ai:
   sys_promt_path: "./config/prod.promt.txt"
-  model: "deepseek-v3"
+  text_generation:
+    model: "deepseek-v3"
+    providers: "LambdaChat,PollinationsAI,Blackbox"
   image_model: "flux-dev"
   retry_policy:
     timeout: 30
